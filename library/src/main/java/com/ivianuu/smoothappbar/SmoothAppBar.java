@@ -7,9 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
 /**
- * Author IVIanuu.
+ * @author Manuel Wrage (IVIanuu)
  */
-
 public class SmoothAppBar {
 
     private final RecyclerView mRecyclerView;
