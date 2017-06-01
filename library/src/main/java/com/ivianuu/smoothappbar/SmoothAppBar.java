@@ -12,27 +12,25 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
  */
 public class SmoothAppBar {
 
-    private final RecyclerView mRecyclerView;
-    private final LinearLayoutManager mLayoutManager;
-    private final AppBarLayout mAppBar;
-
     private boolean mScrolledUp = false;
     private int mLastOffset;
 
-    public SmoothAppBar(@NonNull RecyclerView recyclerView, @NonNull AppBarLayout appBar) {
-        if (!LinearLayoutManager.class.isInstance(recyclerView.getLayoutManager())) {
+    public static SmoothAppBar with(@NonNull RecyclerView recyclerView, @NonNull AppBarLayout appBar) {
+        return new SmoothAppBar(recyclerView, appBar);
+    }
+
+    private SmoothAppBar(RecyclerView recyclerView, final AppBarLayout appBar) {
+        if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
             throw new IllegalArgumentException("layout manager has to be a linearlayoutmanager");
         }
 
-        mRecyclerView = recyclerView;
-        mLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        mAppBar = appBar;
+        final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                // check if we scrolled up
+                // check if we had scrolled up
                 mScrolledUp = dy < 0;
             }
 
@@ -41,17 +39,17 @@ public class SmoothAppBar {
                 super.onScrollStateChanged(recyclerView, newState);
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE
-                        && mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0 && mScrolledUp) {
+                        && layoutManager.findFirstCompletelyVisibleItemPosition() == 0 && mScrolledUp) {
                     // time to expand the nav bar
-                    mAppBar.setExpanded(true, true);
+                    appBar.setExpanded(true, true);
                 }
             }
         });
 
-        mAppBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+        appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                // check if we scrolled up
+                // check if we had scrolled up
                 mScrolledUp = mLastOffset < verticalOffset;
                 mLastOffset = verticalOffset;
             }
